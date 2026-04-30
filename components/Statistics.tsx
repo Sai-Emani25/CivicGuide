@@ -11,10 +11,12 @@ import {
   ResponsiveContainer,
   Cell,
   PieChart,
-  Pie
+  Pie,
+  AreaChart,
+  Area
 } from 'recharts';
 import { motion } from 'motion/react';
-import { Info, BarChart3, TrendingUp } from 'lucide-react';
+import { Info, BarChart3, TrendingUp, History } from 'lucide-react';
 
 const turnoutData = [
   { state: 'MN', turnout: 79.9 },
@@ -29,6 +31,14 @@ const turnoutData = [
   { state: 'IA', turnout: 68.9 },
 ];
 
+const trendData = [
+  { year: '2016', turnout: 60.1, type: 'Presidential' },
+  { year: '2018', turnout: 49.4, type: 'Midterm' },
+  { year: '2020', turnout: 66.8, type: 'Presidential' },
+  { year: '2022', turnout: 46.6, type: 'Midterm' },
+  { year: '2024', turnout: 66.2, type: 'Presidential' },
+];
+
 const generationData = [
   { name: 'Gen Z', value: 10, color: '#1A1A1A' },
   { name: 'Millennials', value: 25, color: '#4A4A4A' },
@@ -38,6 +48,21 @@ const generationData = [
 ];
 
 export function Statistics() {
+  const [mounted, setMounted] = React.useState(false);
+
+  React.useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    return (
+      <div id="statistics" className="w-full max-w-7xl mx-auto py-32 px-4 h-[1000px]">
+        {/* Placeholder to prevent layout shift during mount */}
+      </div>
+    );
+  }
+
   return (
     <div id="statistics" className="w-full max-w-7xl mx-auto py-32 px-4">
       <div className="flex flex-col md:flex-row justify-between items-baseline mb-20 border-b border-[#1A1A1A] pb-8">
@@ -152,6 +177,79 @@ export function Statistics() {
           </div>
         </motion.div>
       </div>
+
+      {/* Cycle Trends Chart */}
+      <motion.div 
+        initial={{ opacity: 0, scale: 0.98 }}
+        whileInView={{ opacity: 1, scale: 1 }}
+        className="mt-12 bg-[#F9F8F6] border-2 border-[#1A1A1A] p-10 flex flex-col lg:flex-row gap-12"
+      >
+        <div className="lg:w-1/3">
+          <div className="flex items-center gap-3 mb-6">
+            <History className="w-5 h-5 text-[#D22B2B]" />
+            <h3 className="text-xs font-black uppercase tracking-[0.3em] text-[#1A1A1A]">Cycle Dynamics</h3>
+          </div>
+          <h4 className="text-4xl font-serif font-black italic text-[#1A1A1A] mb-6 leading-tight">Turnout Volatility</h4>
+          <p className="text-sm font-medium text-gray-600 leading-relaxed max-w-sm">
+            Voter participation fluctuates significantly between Presidential and Midterm cycles. However, the baseline for midterm turnout has shifted upwards since the 2018 historic high.
+          </p>
+          <div className="mt-8 space-y-4">
+            <div className="flex items-center justify-between border-b border-gray-200 pb-2">
+              <span className="text-[10px] font-black uppercase tracking-widest text-gray-400">Peak Turnout</span>
+              <span className="font-serif italic font-bold">66.8% (2020)</span>
+            </div>
+            <div className="flex items-center justify-between border-b border-gray-200 pb-2">
+              <span className="text-[10px] font-black uppercase tracking-widest text-gray-400">Avg. Growth</span>
+              <span className="font-serif italic font-bold text-[#D22B2B]">+4.2%</span>
+            </div>
+          </div>
+        </div>
+
+        <div className="lg:w-2/3 h-[300px]">
+          <ResponsiveContainer width="100%" height="100%">
+            <AreaChart data={trendData}>
+              <defs>
+                <linearGradient id="colorTurnout" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="#D22B2B" stopOpacity={0.3}/>
+                  <stop offset="95%" stopColor="#D22B2B" stopOpacity={0}/>
+                </linearGradient>
+              </defs>
+              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e5e5e5" />
+              <XAxis 
+                dataKey="year" 
+                axisLine={false} 
+                tickLine={false} 
+                tick={{ fontSize: 11, fontWeight: 900, fill: '#1A1A1A' }}
+                dy={10}
+              />
+              <YAxis 
+                axisLine={false} 
+                tickLine={false} 
+                tick={{ fontSize: 11, fontWeight: 900, fill: '#1A1A1A' }}
+                domain={[40, 70]}
+              />
+              <Tooltip 
+                contentStyle={{ 
+                  backgroundColor: '#1A1A1A', 
+                  border: 'none', 
+                  color: '#fff',
+                  fontFamily: 'serif'
+                }}
+                labelStyle={{ fontWeight: 900, marginBottom: 4 }}
+              />
+              <Area 
+                type="monotone" 
+                dataKey="turnout" 
+                stroke="#D22B2B" 
+                strokeWidth={4}
+                fillOpacity={1} 
+                fill="url(#colorTurnout)" 
+                animationDuration={2000}
+              />
+            </AreaChart>
+          </ResponsiveContainer>
+        </div>
+      </motion.div>
 
       <div className="mt-20 flex flex-col md:flex-row gap-12 bg-white border-2 border-[#1A1A1A] p-12">
         <div className="md:w-1/3">
