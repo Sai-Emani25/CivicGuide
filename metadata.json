@@ -1,0 +1,6 @@
+{
+  "name": "CivicGuide",
+  "description": "Your interactive assistant for navigating the election process, voting registration, and civic timelines.",
+  "requestFramePermissions": [],
+  "majorCapabilities": []
+}
